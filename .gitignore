@@ -1,0 +1,7 @@
+*.exe
+pkg/
+src/github.com/
+src/golang.org/
+log/
+log*/
+public/
