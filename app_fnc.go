@@ -3,18 +3,18 @@ package main
 import (
 	"net/http"
 	"strings"
-	"time"
+	//"time"
 )
 
 //функция для лога всех запросов
 func LogReq(f func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		startLoadTime := time.Now()
-		LogPrint(CurTimeStrRFC3339() + " <- " + r.URL.Scheme + " " + r.URL.Path + "?" + r.URL.RawQuery)
+		//startLoadTime := time.Now()
+		//LogPrint(CurTimeStrRFC3339() + " <- " + r.URL.Scheme + " " + r.URL.Path + "?" + r.URL.RawQuery)
 
 		f(w, r)
 
-		LogPrint(CurTimeStrRFC3339() + " -> " + r.URL.Scheme + " " + r.URL.Path + "?" + r.URL.RawQuery + sprintf("  %v ", time.Now().Sub(startLoadTime)))
+		//LogPrint(CurTimeStrRFC3339() + " -> " + r.URL.Scheme + " " + r.URL.Path + "?" + r.URL.RawQuery + sprintf("  %v ", time.Now().Sub(startLoadTime)))
 	}
 }
 

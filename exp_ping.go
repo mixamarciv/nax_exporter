@@ -14,7 +14,7 @@ var re_not_d2 *regexp.Regexp
 
 func init() {
 	re_not_d, _ = regexp.Compile("[^\\d]+")
-	re_not_d2, _ = regexp.Compile("[^\\d]+")
+	re_not_d2, _ = regexp.Compile("[^\\d\\<\\.]+")
 }
 
 func exp_ping(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +34,7 @@ func exp_ping(w http.ResponseWriter, r *http.Request) {
 	} else { //if runtime.GOOS == "linux" {
 		cmd = []string{"ping", host, "-c", "1"}
 	}
-	w.Write([]byte(sprintf("#cmd: %#v\n\n", cmd)))
+	//w.Write([]byte(sprintf("#cmd: %#v\n\n", cmd)))
 
 	out, err := exec.Command(cmd[0], cmd[1:]...).Output()
 	s := string(out)
@@ -80,8 +80,10 @@ func exp_ping(w http.ResponseWriter, r *http.Request) {
 	//LogPrint("out: " + string(out))
 	if err != nil {
 		data += "ping_" + host + "_error 1\n\n"
-		ShowError(data, err, w, r)
-		return
+		data += sprintf("#cmd: %#v\n\n#", cmd)
+		str := ErrStr(err)
+		str = strings.Replace(str, "\n", "\n#", -1)
+		data += str
 	}
 	w.Write([]byte(data))
 }
