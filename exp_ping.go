@@ -11,21 +11,57 @@ import (
 
 var re_not_d *regexp.Regexp
 var re_not_d2 *regexp.Regexp
+var ping_workers_cnt = 4
 
 func init() {
 	re_not_d, _ = regexp.Compile("[^\\d]+")
 	re_not_d2, _ = regexp.Compile("[^\\d\\<\\.]+")
+	ping_workers_cnt = int(gcfg_app["ping_workers_cnt"].(float64))
 }
 
 func exp_ping(w http.ResponseWriter, r *http.Request) {
 	GET, _ := url.ParseQuery(r.URL.RawQuery)
 
-	t, b := GET["host"]
+	hosts, b := GET["host"]
 	if !b {
-		w.Write([]byte("GET['host']\n"))
+		w.Write([]byte("GET['host'] not set\n"))
 	}
-	host := t[0]
 
+	cnt := len(hosts)
+	cnt_w := ping_workers_cnt
+	if cnt < cnt_w {
+		cnt_w = cnt
+	}
+
+	jobs := make(chan string, cnt)
+	results := make(chan string, cnt)
+	for w := 1; w <= cnt_w; w++ {
+		go exp_ping_worker(w, jobs, results)
+	}
+
+	for j := 0; j < cnt; j++ {
+		jobs <- hosts[j]
+	}
+	close(jobs)
+
+	data := ""
+	for r := 0; r < cnt; r++ {
+		data += <-results
+		data += "\n"
+	}
+
+	w.Write([]byte(data))
+}
+
+func exp_ping_worker(id int, jobs <-chan string, results chan<- string) {
+	for j := range jobs {
+		s := sprintf("#worker %d\n", id)
+		s += exp_ping_host(j)
+		results <- s
+	}
+}
+
+func exp_ping_host(host string) string {
 	var cmd []string
 	if runtime.GOOS == "windows" {
 		//cmd = []string{"chcp", "65001", "&&", "ping", host, "-n", "1"}
@@ -73,9 +109,9 @@ func exp_ping(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	data := "ping_" + host + "_ms " + ms + "\n"
-	data += "ping_" + host + "_ttl " + ttl + "\n"
-	data += "ping_" + host + "_success " + success + "\n\n"
+	data := "ping_ms{ip=\"" + host + "\"} " + ms + "\n"
+	data += "ping_ttl{ip=\"" + host + "\"} " + ttl + "\n"
+	data += "ping_success{ip=\"" + host + "\"} " + success + "\n\n"
 
 	//LogPrint("out: " + string(out))
 	if err != nil {
@@ -85,5 +121,6 @@ func exp_ping(w http.ResponseWriter, r *http.Request) {
 		str = strings.Replace(str, "\n", "\n#", -1)
 		data += str
 	}
-	w.Write([]byte(data))
+	//w.Write([]byte(data))
+	return data
 }

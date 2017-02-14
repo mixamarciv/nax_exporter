@@ -1,3 +1,4 @@
 {
-	"server_addr":":3000"
+	"server_addr":":3000",
+	"ping_workers_cnt":8
 }
