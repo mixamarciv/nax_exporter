@@ -1,4 +1,6 @@
 {
-	"server_addr":":3000",
-	"ping_workers_cnt":8
+	"server_addr":":1002",
+	"ping_workers_cnt":8,
+	"httpget_workers_cnt":8,
+	"other":0
 }

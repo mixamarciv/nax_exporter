@@ -10,11 +10,16 @@ import (
 	"strconv"
 	"time"
 
+	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"log"
+	"net/http"
 	"regexp"
 	"runtime/debug"
 	"strings"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 var sprintf = fmt.Sprintf
@@ -176,4 +181,98 @@ func FileExists(path string) bool {
 
 func MkdirAll(path string) error {
 	return os.MkdirAll(path, 0777)
+}
+
+//отправляем запрос на список адресов по дому
+func SendHttpRequest(urlStr string, m map[string]string) ([]byte, error) {
+	client := &http.Client{}
+
+	r, err := http.NewRequest("GET", urlStr, nil)
+	if err != nil {
+		return /*[]byte{}*/ nil, err
+	}
+
+	//r.Header.Add("authority", "vk.com")
+	//r.Header.Add("method", "GET")
+	//r.Header.Add("path", "/")
+	//r.Header.Add("scheme", "https")
+	//r.Header.Add("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+	//r.Header.Add("accept-encoding", "gzip, deflate, sdch, br")
+	//r.Header.Add("accept-language", "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4")
+	//r.Header.Add("upgrade-insecure-requests", "1")
+	//r.Header.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36")
+
+	resp, err := client.Do(r)
+	if err != nil {
+		return /*[]byte{}*/ nil, err
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := UnzipData(body)
+	if err == nil {
+		body = data
+	} else {
+		//hz
+	}
+
+	//dump_resp := var_dump(resp, 4, "\t")
+
+	//body = []byte(dump_resp + "\n\n\n" + string(body))
+
+	return body, nil
+}
+
+//распаковка данных
+func UnzipData(data []byte) ([]byte, error) {
+	b := bytes.NewReader(data)
+	z, err := gzip.NewReader(b)
+	if err != nil {
+		return nil, err
+	}
+	defer z.Close()
+	p, err := ioutil.ReadAll(z)
+	if err != nil {
+		return nil, err
+	}
+	return p, nil
+}
+
+func var_dump(v interface{}, depth int, indent string) string {
+	cs := &spew.ConfigState{
+		Indent:                  indent,
+		MaxDepth:                depth,
+		SortKeys:                true,
+		DisableMethods:          true,
+		DisableCapacities:       true,
+		DisablePointerAddresses: true,
+		DisablePointerMethods:   true,
+		SpewKeys:                true,
+	}
+	//return cs.Sprintf("%#v", v)
+	return cs.Sdump(v)
+}
+
+//читает и парсит json из файла
+func JsonFromFile(file string) (map[string]interface{}, error) {
+	js := make(map[string]interface{})
+	//file := apppath + "/" + os.Args[1]
+	//file := os.Args[1]
+	data, err := FileRead(file)
+	if err != nil {
+		return nil, err
+	}
+	//LogPrintErrAndExit("JsonFromFile Error1: can't read file: "+file+"\n\n", err)
+
+	js, err = FromJson(data)
+	if err != nil {
+		return nil, err
+	}
+	//LogPrintErrAndExit("JsonFromFile Error2: Unmarshal json error: "+file+"\n\n", err)
+
+	return js, nil
 }

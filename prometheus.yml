@@ -1,0 +1,45 @@
+scrape_configs:
+  - job_name: 'test123'
+    scrape_interval: 10s
+    metrics_path: '/ping'
+    scheme: 'http'
+    params:
+        host: ['vrashke.net','anykeyadmin.info','optina.ru','monvestnik.ru','192.168.0.30','192.168.0.31','192.168.0.105','192.168.0.101']
+    static_configs:
+      - targets: ['192.168.0.31:1000','192.168.0.30:3000'] # hosts where you start nax_exporter
+
+
+  - job_name: 'rig1'
+    scrape_interval: 10s
+    metrics_path: '/httpget'
+    scheme: 'http'
+    params:
+        url: ['http://192.168.0.101:3333']
+        type: ['ethminer']
+    static_configs:
+      - targets: ['192.168.0.31:1000'] 
+
+
+  - job_name: 'rig2'
+    scrape_interval: 10s
+    metrics_path: '/httpget'
+    scheme: 'http'
+    params:
+        url: ['http://192.168.0.105:3333']
+        type: ['ethminer']
+    static_configs:
+      - targets: ['192.168.0.31:1000'] 
+
+
+  - job_name: 'balance_coinminepl'
+    scrape_interval: 10s
+    metrics_path: '/httpget'
+    scheme: 'http'
+    params:
+        url: ['https://www2.coinmine.pl/eth/index.php?page=api%26api_key=11111%26id=11111%26action=getuserbalance']
+        type: ['balance_coinminepl']
+    static_configs:
+      - targets: ['192.168.0.31:1000'] 
+
+
+

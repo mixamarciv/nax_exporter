@@ -19,11 +19,8 @@ func InitApp() {
 
 	LogPrint("you run: " + apppath + "/" + os.Args[0] + " " + os.Args[1])
 
-	gcfg_app = make(map[string]interface{})
-	//file := apppath + "/" + os.Args[1]
 	file := os.Args[1]
-	data, err := FileRead(file)
-	LogPrintErrAndExit("InitAppCfg Error1: can't read file: "+file+"\n\n", err)
-	gcfg_app, err = FromJson(data)
-	LogPrintErrAndExit("InitAppCfg Error2: Unmarshal json error: "+file+"\n\n", err)
+	var err error
+	gcfg_app, err = JsonFromFile(file)
+	LogPrintErrAndExit("InitApp Error1 JsonFromFile: "+file+"\n\n", err)
 }

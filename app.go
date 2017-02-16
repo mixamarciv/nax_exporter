@@ -15,6 +15,7 @@ func init() {
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/ping", LogReq(exp_ping))
+	r.HandleFunc("/httpget", LogReq(exp_httpget))
 
 	srv := &http.Server{
 		Handler:      r,

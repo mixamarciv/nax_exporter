@@ -25,6 +25,7 @@ func exp_ping(w http.ResponseWriter, r *http.Request) {
 	hosts, b := GET["host"]
 	if !b {
 		w.Write([]byte("GET['host'] not set\n"))
+		return
 	}
 
 	cnt := len(hosts)
