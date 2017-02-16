@@ -76,7 +76,7 @@ func exp_ping_host(host string) string {
 	out, err := exec.Command(cmd[0], cmd[1:]...).Output()
 	s := string(out)
 
-	ms := "-1"
+	ms := "90000"
 	ttl := "0"
 	success := "0"
 
