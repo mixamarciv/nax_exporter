@@ -67,9 +67,9 @@ func exp_ping_host(host string) string {
 	if runtime.GOOS == "windows" {
 		//cmd = []string{"chcp", "65001", "&&", "ping", host, "-n", "1"}
 		//cmd = []string{"cmd", "/c", "\"chcp 65001&ping " + host + " -n 1\""}
-		cmd = []string{"ping", host, "-n", "1"}
+		cmd = []string{"ping", host, "-n", "1", "-w", "2000"}
 	} else { //if runtime.GOOS == "linux" {
-		cmd = []string{"ping", host, "-c", "1"}
+		cmd = []string{"ping", host, "-c", "1", "-W", "2"}
 	}
 	//w.Write([]byte(sprintf("#cmd: %#v\n\n", cmd)))
 
@@ -116,7 +116,7 @@ func exp_ping_host(host string) string {
 
 	//LogPrint("out: " + string(out))
 	if err != nil {
-		data += "ping_" + host + "_error 1\n\n"
+		data += "ping_error{ip=\"" + host + "\"} 1\n\n"
 		data += sprintf("#cmd: %#v\n\n#", cmd)
 		str := ErrStr(err)
 		str = strings.Replace(str, "\n", "\n#", -1)
