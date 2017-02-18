@@ -33,19 +33,3 @@ func ShowError(title string, err error, w http.ResponseWriter, r *http.Request) 
 	w.Write([]byte(serr))
 
 }
-
-//возвращает значение элемента d[args1][args2][args3]
-//или возвращает defaultval если этот элемент не существует
-func get_map_val(d map[string]interface{}, defaultval interface{}, args ...string) interface{} {
-	var t interface{}
-	t = d
-	for _, v := range args {
-		x := t.(map[string]interface{})
-		a, ok := x[v]
-		if !ok {
-			return defaultval
-		}
-		t = a
-	}
-	return t
-}

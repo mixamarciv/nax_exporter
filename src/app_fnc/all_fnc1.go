@@ -1,4 +1,4 @@
-package main
+package app_fnc
 
 import (
 	"encoding/base64"
@@ -14,7 +14,6 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"log"
-	"net/http"
 	"regexp"
 	"runtime/debug"
 	"strings"
@@ -22,25 +21,44 @@ import (
 	"github.com/davecgh/go-spew/spew"
 )
 
+//возвращает значение элемента d[args1][args2][args3]
+//или возвращает defaultval если этот элемент не существует
+func get_map_val(d map[string]interface{}, defaultval interface{}, args ...string) interface{} {
+	var t interface{}
+	t = d
+	for _, v := range args {
+		x := t.(map[string]interface{})
+		a, ok := x[v]
+		if !ok {
+			return defaultval
+		}
+		t = a
+	}
+	return t
+}
+
+var Printf = fmt.Printf
 var sprintf = fmt.Sprintf
+var Sprintf = fmt.Sprintf
+var Atoi = strconv.Atoi
 
-func i64toa(d int64) string {
+func I64toa(d int64) string {
 	return sprintf("%d", d)
 }
 
-func itoa(d int) string {
+func Itoa(d int) string {
 	return sprintf("%d", d)
 }
 
-func floatToStr(f interface{}) string {
+func FloatToStr(f interface{}) string {
 	return strconv.FormatFloat(f.(float64), 'f', 0, 64)
 }
 
-func fmtError(s string, err error) string {
+func FmtError(s string, err error) string {
 	return s + fmt.Sprintf("\n\n%#v", err)
 }
 
-func base64Decode(s string) string {
+func Base64Decode(s string) string {
 	decoded, err := base64.StdEncoding.DecodeString(s)
 	if err != nil {
 		return fmt.Sprint("error:", err)
@@ -71,6 +89,13 @@ func ErrStr(err error) string {
 	return s
 }
 
+func ErrStr2Comment(title string, err error) string {
+	s := ErrStr(err)
+	s = strings.Replace(s, "\n", "\n#", -1)
+	s = "#" + title + "\n#" + s
+	return s
+}
+
 //преобразует из json строки в map[string]interface{}
 func FromJson(data []byte) (map[string]interface{}, error) {
 	var d map[string]interface{}
@@ -79,6 +104,14 @@ func FromJson(data []byte) (map[string]interface{}, error) {
 		return map[string]interface{}{"error": ErrStr(err), "data": string(data)}, err
 	}
 	return d, nil
+}
+func FromJsonStr(data []byte) map[string]interface{} {
+	var d map[string]interface{}
+	err := json.Unmarshal(data, &d)
+	if err != nil {
+		return map[string]interface{}{"error": ErrStr(err), "data": string(data)}
+	}
+	return d
 }
 func ToJsonStr(v interface{}) string {
 	j, err := json.Marshal(v)
@@ -190,50 +223,6 @@ func MkdirAll(path string) error {
 	return os.MkdirAll(path, 0777)
 }
 
-//отправляем запрос на список адресов по дому
-func SendHttpRequest(urlStr string, m map[string]string) ([]byte, error) {
-	client := &http.Client{}
-
-	r, err := http.NewRequest("GET", urlStr, nil)
-	if err != nil {
-		return /*[]byte{}*/ nil, err
-	}
-
-	//r.Header.Add("authority", "vk.com")
-	//r.Header.Add("method", "GET")
-	//r.Header.Add("path", "/")
-	//r.Header.Add("scheme", "https")
-	//r.Header.Add("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-	//r.Header.Add("accept-encoding", "gzip, deflate, sdch, br")
-	//r.Header.Add("accept-language", "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4")
-	//r.Header.Add("upgrade-insecure-requests", "1")
-	//r.Header.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36")
-
-	resp, err := client.Do(r)
-	if err != nil {
-		return /*[]byte{}*/ nil, err
-	}
-
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := UnzipData(body)
-	if err == nil {
-		body = data
-	} else {
-		//hz
-	}
-
-	//dump_resp := var_dump(resp, 4, "\t")
-
-	//body = []byte(dump_resp + "\n\n\n" + string(body))
-
-	return body, nil
-}
-
 //распаковка данных
 func UnzipData(data []byte) ([]byte, error) {
 	b := bytes.NewReader(data)
@@ -249,7 +238,7 @@ func UnzipData(data []byte) ([]byte, error) {
 	return p, nil
 }
 
-func var_dump(v interface{}, depth int, indent string) string {
+func Var_dump(v interface{}, depth int, indent string) string {
 	cs := &spew.ConfigState{
 		Indent:                  indent,
 		MaxDepth:                depth,

@@ -112,12 +112,12 @@ func exp_ping_host(host string) string {
 
 	data := "ping_ms{ip=\"" + host + "\"} " + ms + "\n"
 	data += "ping_ttl{ip=\"" + host + "\"} " + ttl + "\n"
-	data += "ping_success{ip=\"" + host + "\"} " + success + "\n\n"
+	data += "ping_success{ip=\"" + host + "\"} " + success + "\n"
 
 	//LogPrint("out: " + string(out))
 	if err != nil {
-		data += "ping_error{ip=\"" + host + "\"} 1\n\n"
-		data += sprintf("#cmd: %#v\n\n#", cmd)
+		data += "ping_error{ip=\"" + host + "\"} 1\n"
+		data += sprintf("#cmd: %#v\n#", cmd)
 		str := ErrStr(err)
 		str = strings.Replace(str, "\n", "\n#", -1)
 		data += str

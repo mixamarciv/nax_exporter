@@ -1,5 +1,6 @@
 scrape_configs:
-  - job_name: 'test123'
+  # проверка - пинг хостов host: с машин targets: на которых работает nax_exporter
+  - job_name: 'ping'
     scrape_interval: 10s
     metrics_path: '/ping'
     scheme: 'http'
@@ -7,6 +8,26 @@ scrape_configs:
         host: ['vrashke.net','anykeyadmin.info','optina.ru','monvestnik.ru','192.168.0.30','192.168.0.31','192.168.0.105','192.168.0.101']
     static_configs:
       - targets: ['192.168.0.31:1000','192.168.0.30:3000'] # hosts where you start nax_exporter
+
+
+  # проверка доступности сайтов
+  - job_name: 'sites1'
+    scrape_interval: 60s
+    metrics_path: '/metricsget'
+    scheme: 'http'
+    params:
+	threads: [1,2]                          # сколько функций будет выполняться одновременно, сколько урл будет проверяться одновременно default[8,8]
+        fnc: ['check_url']                  # список функций
+        url: ['http://vrashke.ru','http://vrashke.net','http//anykeyadmin.info']  # список параметров-урл, - все параметры будут передаваться во все функции
+
+	    # регулярные выражения применяются только в функции 'check_url' и проверяются все урл
+	    re_success: ['mixamarciv','<nav']      # body урл должна соответствовать всем регулярным выражениям для успешной проверки
+	    re_fail: []                            # body урл должна соответствовать хотябы одному регулярному выражению для неудачи
+	    re_status_success: []                  # status урл должна соответствовать всем регулярным выражениям для успешной проверки
+	    re_status_fail: []                     # status урл должна соответствовать хотябы одному регулярному выражению для неудачи
+
+    static_configs:
+      - targets: ['192.168.0.31:1000']             # хост на котором работает nax_exporter
 
 
   - job_name: 'rig1'
