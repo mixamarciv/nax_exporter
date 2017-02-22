@@ -211,8 +211,8 @@ func utilinfo__util_who(fname string, d map[string]interface{}) string {
 	if runtime.GOOS == "windows" {
 		return "ERROR_nax_exporter{utilinfo_who_error=\"who_for_windows_not_found\"} 1"
 	} else {
-		//cmd = []string{"who", "-a"}
-		cmd = []string{"w", "-h"}
+		cmd = []string{"who"}
+		//cmd = []string{"w", "-h"}
 	}
 
 	var out, outerr bytes.Buffer
@@ -234,13 +234,15 @@ func utilinfo__util_who(fname string, d map[string]interface{}) string {
 	ret_s := ""
 	cnt_users := 0
 	for _, s := range sr {
-		//s == luser pts/0 192.168.0.30     13:40    4.00s  0.65s  0.05s sshd: luser [priv]
+		//s == luser pts/0 2017-02-22 13:40 (192.168.0.30)
 		a := strings.Split(s, " ")
-		if len(a) < 3 {
+		if len(a) < 5 {
 			continue
 		}
 		cnt_users++
-		ret_s += "utilinfo_who{user=\"" + a[0] + "\",tty=\"" + a[1] + "\",ip=\"" + a[2] + "\"} 1\n"
+		ip := a[4][1:]
+		ip = ip[:len(ip)-1]
+		ret_s += "utilinfo_who{user=\"" + a[0] + "\",tty=\"" + a[1] + "\",ip=\"" + ip + "\"} 1\n"
 	}
 	ret_s += "utilinfo_who_users " + a.Sprintf("%d", cnt_users)
 
