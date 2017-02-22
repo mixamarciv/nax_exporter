@@ -137,7 +137,7 @@ func utilinfo__util_top(fname string, d map[string]interface{}) string {
 			return "#not found string \" user\"\nERROR_nax_exporter{utilinfo_top_error=\"err5\"} 1"
 		}
 
-		j := strings.Index(s[:i-6], ", ")
+		j := strings.Index(s[i-6:i], ", ")
 		if j < 0 {
 			return "#not found string \", \"\nERROR_nax_exporter{utilinfo_top_error=\"err6\"} 1"
 		}
