@@ -16,7 +16,7 @@ import (
     metrics_path: '/metricsget'
     scheme: 'http'
     params:
-	threads: [1,2]                          # сколько функций будет выполняться одновременно, сколько урл будет проверяться одновременно default[1,1]
+        threads: [1,2]                          # сколько функций будет выполняться одновременно, сколько урл будет проверяться одновременно default[1,1]
         fnc: ['check_url']                  # список функций
         url: ['http://vrashke.ru','http://vrashke.net','http//anykeyadmin.info']  # список параметров-урл, - все параметры будут передаваться во все функции
 
@@ -29,15 +29,9 @@ import (
     static_configs:
       - targets: ['192.168.0.31:1000']
 ************/
-var cache_opt map[string]map[string]interface{}
-
-func init() {
-	cache_opt = make(map[string]map[string]interface{})
-}
-
 func check_url(fnc_name string, params interface{}) string {
 	//re := regexp.MustCompile("(?is)<body[^<]*<")
-	t0 := time.Now()
+	//t0 := time.Now()
 
 	GET := params.(url.Values)
 	d, errstr := check_url__get_opt(GET)
@@ -59,7 +53,7 @@ func check_url(fnc_name string, params interface{}) string {
 
 	ret := "#" + d["info"].(string) + "\n"
 	ret += strings.Join(res, "\n")
-	ret += "check_url_total_ms " + a.Sprintf("%d", int64(time.Now().Sub(t0).Nanoseconds()/1000000)) + "\n"
+	//ret += "\ncheck_url_total_ms " + a.Sprintf("%d", int64(time.Now().Sub(t0).Nanoseconds()/1000000)) + "\n"
 	return ret
 }
 

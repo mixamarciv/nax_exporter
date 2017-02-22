@@ -9,6 +9,7 @@ import (
 	a "app_fnc"
 	f "metricsgetfuncs"
 	"strings"
+	"time"
 )
 
 var metricsget_workers_cnt = 4
@@ -19,6 +20,7 @@ func init() {
 }
 
 func exp_metricsget(w http.ResponseWriter, r *http.Request) {
+	t0 := time.Now()
 	GET, _ := url.ParseQuery(r.URL.RawQuery)
 
 	cnt_w := httpget_workers_cnt //максимальное количество горутин
@@ -51,6 +53,9 @@ func exp_metricsget(w http.ResponseWriter, r *http.Request) {
 	data := strings.Join(res, "\n\n")
 
 	w.Write([]byte(data))
+
+	ret := "\n\nmetricsget_total_ms " + a.Sprintf("%d", int64(time.Now().Sub(t0).Nanoseconds()/1000000)) + "\n"
+	w.Write([]byte(ret))
 }
 
 func exp_metricsget_fnc(job string, get_params interface{}) string {

@@ -92,7 +92,7 @@ func ErrStr(err error) string {
 func ErrStr2Comment(title string, err error) string {
 	s := ErrStr(err)
 	s = strings.Replace(s, "\n", "\n#", -1)
-	s = "#" + title + "\n#" + s
+	s = "#" + strings.Replace(title, "\n", "\n#", -1) + "\n#" + s
 	return s
 }
 
