@@ -239,9 +239,9 @@ func utilinfo__util_who(fname string, d map[string]interface{}) string {
 			continue
 		}
 		cnt_users++
-		ret_s += "utilinfo_who{user=\"" + a[0] + "\",tty=\"" + a[1] + "\",ip=\"" + a[2] + "\"} 1"
+		ret_s += "utilinfo_who{user=\"" + a[0] + "\",tty=\"" + a[1] + "\",ip=\"" + a[2] + "\"} 1\n"
 	}
-	ret_s += "\nutilinfo_who_users " + a.Sprintf("%d", cnt_users)
+	ret_s += "utilinfo_who_users " + a.Sprintf("%d", cnt_users)
 
 	return ret_s
 }
