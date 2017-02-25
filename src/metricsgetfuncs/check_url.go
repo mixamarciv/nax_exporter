@@ -162,7 +162,7 @@ func check_url__item(url string, p interface{}) string {
 		ret += "check_url_fail{url=\"" + url + "\"} 1\n"
 		ret += "check_url_fail_ms{url=\"" + url + "\"} " + ms + "\n"
 		ret += "check_url_fail_contentlength{url=\"" + url + "\"} " + a.Sprintf("%d", contentlength) + "\n"
-		ret += body
+		//ret += body
 	} else {
 		ret += "check_url_success{url=\"" + url + "\"} 1\n"
 		ret += "check_url_success_ms{url=\"" + url + "\"} " + ms + "\n"
