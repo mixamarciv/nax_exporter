@@ -40,7 +40,7 @@ func parse_ethminer(data string) string {
 	ar := result.([]interface{})
 
 	ret := ""
-	ret += "hz_param1 " + ar[0].(string) + "\n"
+	ret += "hz_param1 " + a.StrRegexpReplace(ar[0].(string), "[^\\d]*", "") + "\n"
 	ret += "hz_param2 " + ar[1].(string) + "\n"
 
 	aa := strings.Split(ar[2].(string), ";")

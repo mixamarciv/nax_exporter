@@ -62,4 +62,15 @@ scrape_configs:
       - targets: ['192.168.0.31:1000'] 
 
 
+  - job_name: 'balance_ethpool'
+    scrape_interval: 10s
+    metrics_path: '/httpget'
+    scheme: 'http'
+    params:
+        url: ['http://ethpool.org/api/miner_new/1d6604ffa0307db4df833cba721ce471e26f03cb']
+        type: ['balance_ethpool']
+    static_configs:
+      - targets: ['192.168.0.31:1000'] 
+
+
 
