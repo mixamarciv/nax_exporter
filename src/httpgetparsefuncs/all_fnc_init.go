@@ -17,4 +17,5 @@ func init() {
 
 	fnclist["ethminer"] = parse_ethminer
 	fnclist["balance_coinminepl"] = parse_balance_coinminepl
+	fnclist["balance_ethpool"] = parse_balance_ethpool
 }

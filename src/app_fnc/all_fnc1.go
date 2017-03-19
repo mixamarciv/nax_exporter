@@ -212,6 +212,10 @@ func StrRegexpReplace(text string, regx_from string, to string) string {
 	return text
 }
 
+func StrTrim(s string) string {
+	return strings.Trim(s, "\r\n\t ")
+}
+
 func FileExists(path string) bool {
 	if _, err := os.Stat(path); err == nil {
 		return true
