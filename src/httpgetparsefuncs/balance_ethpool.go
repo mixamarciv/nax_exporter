@@ -94,6 +94,7 @@ func parse_balance_ethpool(data string) string {
 	if _, b := js["error"]; b == true {
 		return "ERROR_1_json_parse 1\n#" + data
 	}
-	return data + "\n\n\n" + jsonToLines(js, "")
+	//return data + "\n\n\n" +
+	return jsonToLines(js, "")
 
 }
