@@ -3,82 +3,8 @@ package httpgetparsefuncs
 import (
 	a "app_fnc"
 
-	"strings"
+	//"strings"
 )
-
-func jsonToLines(js map[string]interface{}, prefix string) string {
-	s := ""
-	for key, val := range js {
-		ikey := a.Sprintf("%v", key)
-		if prefix != "" {
-			ikey = prefix + "_" + ikey
-		}
-		switch tval := val.(type) {
-		case bool, string, int, float64:
-			s += ikey + " " + jsonToLines_getInterfaceVal(tval) + "\n"
-		case []interface{}:
-			s += interfaceArrToLines(tval, ikey) + "\n"
-		case map[string]interface{}:
-			s += jsonToLines(tval, ikey) + "\n"
-		default:
-			s += "#" + ikey + " cant get type info from val: " + interfaceToComment(tval) + "\n"
-		}
-	}
-	return s
-}
-
-func interfaceArrToLines(jsarr []interface{}, prefix string) string {
-	s := ""
-	for key, val := range jsarr {
-		ikey := a.Sprintf("%v", key)
-		if prefix != "" {
-			ikey = prefix + "_" + ikey
-		}
-		switch tval := val.(type) {
-		case bool, string, int, float64:
-			s += ikey + " " + jsonToLines_getInterfaceVal(tval) + "\n"
-		case []interface{}:
-			s += interfaceArrToLines(tval, ikey) + "\n"
-		case map[string]interface{}:
-			s += jsonToLines(tval, ikey) + "\n"
-		default:
-			s += "#" + ikey + " cant get type info from val: " + interfaceToComment(tval) + "\n"
-		}
-	}
-	return s
-}
-
-func jsonToLines_getInterfaceVal(val interface{}) string {
-	switch tval := val.(type) {
-	case int, float64:
-		return a.Sprintf("%v", tval)
-
-	case string:
-		if tval == "" {
-			return "0"
-		}
-		ival := a.StrTrim(a.StrRegexpReplace(tval, "[^\\d\\.\\-e]*", ""))
-		if ival == "" || ival == "." || strings.Index(ival, "..") >= 0 || strings.Count(ival, "e") > 1 || strings.Count(ival, "-") > 1 {
-			return "0"
-		}
-		return ival
-
-	case bool:
-		if tval == false {
-			return "0"
-		}
-		return "1"
-
-	default:
-		return "0\n#======> ERROR3000 !!!  cant get type info from val ERROR3000!!: " + interfaceToComment(tval)
-	}
-}
-
-func interfaceToComment(js interface{}) string {
-	s := a.Sprintf("%#v", js)
-	s = strings.Replace(s, "\n", "\n#", -1)
-	return s
-}
 
 //http://ethpool.org/api/miner_new/1d6604ffa0307db4df833cba721ce471e26f03cb
 //{"address":"1d6604ffa0307db4df833cba721ce471e26f03cb","hashRate":"174.7 MH/s","reportedHashRate":"173.5 MH/s","blocks":[],
@@ -95,6 +21,6 @@ func parse_balance_ethpool(data string) string {
 		return "ERROR_1_json_parse 1\n#" + data
 	}
 	//return data + "\n\n\n" +
-	return jsonToLines(js, "")
+	return a.JsonToLines(js, "")
 
 }
